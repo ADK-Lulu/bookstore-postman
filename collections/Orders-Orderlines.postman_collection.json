@@ -1,0 +1,260 @@
+{
+	"info": {
+		"_postman_id": "ff6718d6-af70-427a-acdf-c278f5b5d544",
+		"name": "Orders-Orderlines",
+		"description": "Tests for orders and orderlines",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST-orders",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "2f42ef72-4029-41ab-8b2a-e6b19d7334e3",
+						"exec": [
+							"if(!pm.environment.has(\"orderFakeData\")){\r",
+							"    let orderFakeData=[\r",
+							"        {\r",
+							"        \"date\": \"2020-05-24 13:22:10\", \r",
+							"        \"client_email\":\"jsandeford2@ihg.com\"\r",
+							"        },\r",
+							"        {\r",
+							"        \"date\": \"2020-05-19 23:53:23\", \r",
+							"        \"client_email\":\"aanscombe5@shutterfly.com\"\r",
+							"        },\r",
+							"        {\r",
+							"        \"date\": \"2020-05-21 21:26:06\", \r",
+							"        \"client_email\":\"mhurdisc@ow.ly\"\r",
+							"        },\r",
+							"        {\r",
+							"        \"date\": \"2020-05-23 21:55:08\", \r",
+							"        \"client_email\":\"aforseithe@xing.com\"\r",
+							"        },\r",
+							"        {\r",
+							"        \"date\": \"2020-05-22 08:31:14\", \r",
+							"        \"client_email\":\"vballach0@jigsy.com\"\r",
+							"        }\r",
+							"    ]; \r",
+							"    pm.environment.set(\"orderCounter\", 0);\r",
+							"    pm.environment.set(\"orderFakeData\", JSON.stringify(orderFakeData));\r",
+							"\r",
+							"}\r",
+							"\r",
+							"let orderCounter = pm.environment.get(\"orderCounter\") / 1;\r",
+							"let orderFakeData = JSON.parse(pm.environment.get(\"orderFakeData\"));\r",
+							"let {date, client_email} = orderFakeData[orderCounter]\r",
+							"\r",
+							"pm.environment.set('date', date);\r",
+							"pm.environment.set('client_email', client_email);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "80805eb1-faa4-4e61-bb60-b2057ddac463",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let orderCounter = pm.environment.get(\"orderCounter\") / 1;\r",
+							"let orderFakeData = JSON.parse(pm.environment.get(\"orderFakeData\"));\r",
+							"\r",
+							"orderFakeData[orderCounter].id = response.insertId;\r",
+							"pm.environment.set('orderFakeData', JSON.stringify(orderFakeData));\r",
+							"\r",
+							"pm.test(\"Something in the response\", function () {\r",
+							"    pm.expect(response).to.not.equal(null);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Correct status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"orderCounter++;\r",
+							"pm.environment.set('orderCounter', orderCounter);\r",
+							"\r",
+							"if(orderFakeData[orderCounter]){\r",
+							"    postman.setNextRequest('http://localhost:3000/api/orders')\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"date\":\"{{date}}\",\n\t\"client_email\":\"{{client_email}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders"
+					]
+				},
+				"description": "Tests for POST orders"
+			},
+			"response": []
+		},
+		{
+			"name": "GET-orders",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders"
+					]
+				},
+				"description": "Tests for GET orders"
+			},
+			"response": []
+		},
+		{
+			"name": "GET-orderlines",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orderlines",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orderlines"
+					]
+				},
+				"description": "Tests for GET orderlines"
+			},
+			"response": []
+		},
+		{
+			"name": "POST-orderlines",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "90ec55ba-0172-4af3-9857-82faa8d6a0d6",
+						"exec": [
+							"if(!pm.environment.has(\"orderLineFakeData\")){\r",
+							"    let orderLineFakeData=[\r",
+							"        {\r",
+							"        \"amount\":\"2\", \r",
+							"        \"book_ISBN_nr\":\"614823801-2\"\r",
+							"        },\r",
+							"        {\r",
+							"        \"amount\":\"1\", \r",
+							"        \"book_ISBN_nr\":\"735896022-X\"\r",
+							"        },\r",
+							"        {\r",
+							"        \"amount\":\"5\", \r",
+							"        \"book_ISBN_nr\":\"335339993-3\"\r",
+							"        },\r",
+							"        {\r",
+							"        \"amount\":\"1\", \r",
+							"        \"book_ISBN_nr\":\"101032032-7\"\r",
+							"        },\r",
+							"\r",
+							"    ]; \r",
+							"    pm.environment.set(\"orderLineCounter\", 0);\r",
+							"    pm.environment.set(\"orderLineFakeData\", JSON.stringify(orderLineFakeData));\r",
+							"\r",
+							"}\r",
+							"\r",
+							"let orderLineCounter = pm.environment.get(\"orderLineCounter\") / 1;\r",
+							"let orderLineFakeData = JSON.parse(pm.environment.get(\"orderLineFakeData\"));\r",
+							"let {amount, book_ISBN_nr} = orderLineFakeData[orderLineCounter]\r",
+							"\r",
+							"pm.environment.set('amount', amount);\r",
+							"pm.environment.set('book_ISBN_nr', book_ISBN_nr);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3fa9c203-2c91-47e0-8b03-6a112f13c4d0",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let orderLineCounter = pm.environment.get(\"orderLineCounter\") / 1;\r",
+							"let orderLineFakeData = JSON.parse(pm.environment.get(\"orderLineFakeData\"));\r",
+							"\r",
+							"orderLineFakeData[orderLineCounter].id = response.insertId;\r",
+							"pm.environment.set('orderLineFakeData', JSON.stringify(orderLineFakeData));\r",
+							"\r",
+							"pm.test(\"Something in the response\", function () {\r",
+							"    pm.expect(response).to.not.equal(null);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Correct status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"orderLineCounter++;\r",
+							"pm.environment.set('orderLineCounter', orderLineCounter);\r",
+							"\r",
+							"if(orderLineFakeData[orderLineCounter]){\r",
+							"    postman.setNextRequest('http://localhost:3000/api/orderlines')\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"amount\":\"{{amount}}\",\n\t\"book_ISBN_nr\":\"{{book_ISBN_nr}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/orderlines",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orderlines"
+					]
+				},
+				"description": "Tests for POST orderlines"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

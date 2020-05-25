@@ -73,8 +73,6 @@
 							"    pm.environment.set(\"counter\", 0);\r",
 							"    pm.environment.set(\"fakeData\", JSON.stringify(fakeData));\r",
 							"\r",
-							"}else {\r",
-							"    fakeData=\"Finns inget här\";\r",
 							"}\r",
 							"\r",
 							"let counter = pm.environment.get(\"counter\") / 1;\r",
