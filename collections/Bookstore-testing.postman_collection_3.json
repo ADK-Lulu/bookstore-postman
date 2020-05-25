@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "f58abf4e-9f54-450f-9463-cbb276310bfa",
-		"name": "Bookstore-testing",
+		"_postman_id": "c54a0cae-f6d7-49cc-8979-2b027aca8cfe",
+		"name": "Bookstore-testing copy",
 		"description": "Different test to test the bookstore",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -54,6 +54,27 @@
 					]
 				},
 				"description": "Create 3 new clients"
+			},
+			"response": []
+		},
+		{
+			"name": "POST-books",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/books",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"books"
+					]
+				},
+				"description": "8 Books created. Last 2 are falsy. Expect to throw..."
 			},
 			"response": []
 		},
