@@ -1,0 +1,184 @@
+{
+	"info": {
+		"_postman_id": "f58abf4e-9f54-450f-9463-cbb276310bfa",
+		"name": "Clients",
+		"description": "Different test to test the bookstore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET-clients",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/clients",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"clients"
+					]
+				},
+				"description": "Using GET to get all writers"
+			},
+			"response": []
+		},
+		{
+			"name": "POST-clients",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f0f803dd-e354-47f5-b6de-252bec646562",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"pm.test(\"Number of clients added\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.changes).to.eql(1);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\":\"whosthatgirl2@gotmail.com\"\n}\n\n\n\n\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/clients",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"clients"
+					]
+				},
+				"description": "Create 3 new clients"
+			},
+			"response": []
+		},
+		{
+			"name": "POST-clients2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "03648559-2c5e-4df9-ab50-5e026747dfa9",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"pm.test(\"What number is the last client\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.lastID).to.be.a('number');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\":\"cometomama@hotmail.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/clients",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"clients"
+					]
+				},
+				"description": "Create 3 new clients"
+			},
+			"response": []
+		},
+		{
+			"name": "POST-clients3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "df946ce3-09dd-4b71-8900-b7d187eff654",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"pm.test(\"Is my response an object\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an('object');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\":\"toreskogman@gmail.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/clients",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"clients"
+					]
+				},
+				"description": "Create 3 new clients"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
