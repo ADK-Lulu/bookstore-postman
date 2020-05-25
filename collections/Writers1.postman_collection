@@ -1,0 +1,173 @@
+{
+	"info": {
+		"_postman_id": "1168dc55-d1e1-4cd6-83c4-0c0e7be0ee54",
+		"name": "Writers",
+		"description": "Different test for writers in bookstore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET-writers",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/writers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"writers"
+					]
+				},
+				"description": "Using GET to get all writers"
+			},
+			"response": []
+		},
+		{
+			"name": "POST-writers",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "25d0a415-bc81-42ec-9d58-08a7bc688960",
+						"exec": [
+							"if(!pm.environment.has(\"fakeData\")){\r",
+							"    let fakeData=[\r",
+							"        {\r",
+							"        \"name\": \"PC Cast\", \r",
+							"        \"description\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ipsum orci, semper vel pretium quis, suscipit et metus. Integer convallis leo nec metus malesuada, malesuada.\"\r",
+							"        },\r",
+							"        {\r",
+							"        \"name\": \"Jenny Colgan\", \r",
+							"        \"description\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut sit amet augue et tortor malesuada egestas. Etiam cursus lectus at metus elementum accumsan. Proin maximus.\"\r",
+							"        },\r",
+							"        {\r",
+							"        \"name\": \"Mitek Grocher\", \r",
+							"        \"description\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla nec lectus eleifend, venenatis risus eu, mollis arcu. Nam sodales lacus vel placerat posuere. Duis interdum.\"\r",
+							"        },\r",
+							"        {\r",
+							"        \"name\": \"HP Lovecraft\", \r",
+							"        \"description\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus volutpat suscipit imperdiet. Proin vehicula efficitur purus eu bibendum. Curabitur consequat risus augue. Praesent a venenatis.\"\r",
+							"        },\r",
+							"        {\r",
+							"        \"name\": \"Sir Arthur Conan Doyle\", \r",
+							"        \"description\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis elit neque, consectetur nec finibus eget, varius et tellus. Morbi fringilla risus eu diam auctor, vel.\"\r",
+							"        }\r",
+							"    ]; \r",
+							"    pm.environment.set(\"counter\", 0);\r",
+							"    pm.environment.set(\"fakeData\", JSON.stringify(fakeData));\r",
+							"\r",
+							"}else {\r",
+							"    fakeData=\"Finns inget här\";\r",
+							"}\r",
+							"\r",
+							"let counter = pm.environment.get(\"counter\") / 1;\r",
+							"let fakeData = JSON.parse(pm.environment.get(\"fakeData\"));\r",
+							"let {name, description} = fakeData[counter]\r",
+							"\r",
+							"pm.environment.set('name', name);\r",
+							"pm.environment.set('description', description);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "b2631f1b-4796-4175-ae60-d4c3bfe4f2ba",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let counter = pm.environment.get(\"counter\") / 1;\r",
+							"let fakeData = JSON.parse(pm.environment.get(\"fakeData\"));\r",
+							"\r",
+							"fakeData[counter].id = response.insertId;\r",
+							"pm.environment.set('fakeData', JSON.stringify(fakeData));\r",
+							"\r",
+							"pm.test(\"Something in the response\", function () {\r",
+							"    pm.expect(response).to.not.equal(null);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Correct status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"counter++;\r",
+							"pm.environment.set('counter', counter);\r",
+							"\r",
+							"if(fakeData[counter]){\r",
+							"    postman.setNextRequest('http://localhost:3000/api/writers')\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"{{name}}\", \n\t\"description\": \"{{description}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/writers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"writers"
+					]
+				},
+				"description": "Posting some writers"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "eb816281-22a8-47e6-8dd7-73406da70bd7",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "a86072cc-fca2-4020-b293-dd6b1f2bdf81",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
