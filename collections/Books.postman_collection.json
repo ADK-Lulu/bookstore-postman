@@ -16,17 +16,15 @@
 						"exec": [
 							"let response = pm.response.json();\r",
 							"\r",
-							"\r",
-							"\r",
 							"// Reading/parsing environment variables back to local variables\r",
 							"let counter = pm.environment.get(\"counter\") / 1;\r",
 							"let mockData = JSON.parse(pm.environment.get(\"mockData\"));\r",
 							"\r",
 							"// Add the inserted id to the mockData and save to environment\r",
-							"mockData[counter].id = response.lastID;\r",
+							"mockData[counter].id= response.lastID;\r",
+							"\r",
+							"\r",
 							"pm.environment.set('mockData', JSON.stringify(mockData));\r",
-							"\r",
-							"\r",
 							"pm.test(\"Correct status\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
@@ -38,8 +36,6 @@
 							"// Run request again if more mockdata\r",
 							"if(mockData[counter]){\r",
 							"    postman.setNextRequest(\"POST-books\");\r",
-							"    \r",
-							"\r",
 							"}\r",
 							"// Otherwise reset the counter\r",
 							"// (for the next request that will reuse the mockdata)\r",
@@ -59,12 +55,12 @@
 							"    let mockData = [\r",
 							"      \r",
 							"      {\r",
-							"        \"ISBN_nr\": \"912585033-3\", \r",
-							"        \"title\": \"Fem på rymmen\", \r",
-							"        \"description\": \"Justo, lacinia eget, tincidunt eget, tempus vel, pede.\\n\\nMorbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.\", \r",
-							"        \"pages\": 430, \r",
-							"        \"price\": 70\r",
-							"      },\r",
+							"        \"ISBN_nr\": \"9193359099-1\", \r",
+							"        \"title\": \"Fem laxar i en laxtunna\", \r",
+							"        \"description\": \"Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.\", \r",
+							"        \"pages\": 444, \r",
+							"        \"price\": 2222\r",
+							"        },\r",
 							"      {\r",
 							"        \"ISBN_nr\": \"9193355022-1\", \r",
 							"        \"title\": \"Sex ben på en insekt\", \r",
@@ -145,13 +141,13 @@
 							"\r",
 							"// Reading/parsing environment variables back to local variables\r",
 							"let counter = pm.environment.get(\"counter\") / 1;\r",
-							"let mockData = JSON.parse(pm.environment.get(\"mockData\"));\r",
+							"let badMockData = JSON.parse(pm.environment.get(\"badMockData\"));\r",
 							"\r",
 							"// Add the inserted id to the mockData and save to environment\r",
-							"mockData[counter].id = response.lastID;\r",
-							"pm.environment.set('mockData', JSON.stringify(mockData));\r",
+							"badMockData[counter].id = response.lastID;\r",
+							"pm.environment.set('badMockData', JSON.stringify(badMockData));\r",
 							"\r",
-							"/*\r",
+							"\r",
 							"if(counter===0){\r",
 							"    pm.test('Constraint message when trying to omit ISBN', function () {\r",
 							"        pm.expect(response.errno).to.equal(19)\r",
@@ -166,28 +162,23 @@
 							"\r",
 							"if(counter===2){\r",
 							"    pm.test('Message when no price', function () {\r",
-							"        pm.response.to.have.status(400);\r",
+							"        pm.expect(response.errno).to.equal(19);\r",
 							"    });\r",
 							"}\r",
 							"\r",
 							"if(counter===3){\r",
 							"    pm.test('Message when no title', function () {\r",
-							"        pm.expect(response.errno).to.equal(19)\r",
+							"       pm.expect(response.type).to.equal(\"entity.parse.failed\");\r",
 							"    });\r",
 							"}\r",
 							"\r",
-							"if(counter===4){\r",
-							"    pm.test('Message when no price', function () {\r",
-							"        pm.response.to.have.status(400);\r",
-							"    });\r",
-							"}\r",
-							"*/\r",
+							"\r",
 							"// Increment the counter and save to environment\r",
 							"counter++;\r",
 							"pm.environment.set('counter', counter);\r",
 							"\r",
 							"// Run request again if more mockdata\r",
-							"if(mockData[counter]){\r",
+							"if(badMockData[counter]){\r",
 							"    postman.setNextRequest(\"POST-books negative test\");\r",
 							"}\r",
 							"// Otherwise reset the counter\r",
@@ -203,46 +194,45 @@
 					"script": {
 						"id": "760aa6c4-be92-4c77-98c1-085355433eae",
 						"exec": [
-							"if (!pm.environment.has(\"mockData\")) {\r",
+							"if (!pm.environment.has(\"badMockData\")) {\r",
 							"  \r",
-							"    let mockData = [\r",
-							"     /* {  //utan isbn\r",
+							"    let badMockData = [\r",
+							"     {  //utan ISBN, index 0\r",
 							"          \"title\": \"Ettan på rymmen\",\r",
 							"          \"description\": \"Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna tempus sit amet, sem.\",\r",
 							"          \"pages\": \"3500\", \r",
 							"          \"price\": \"400\"\r",
 							"        },\r",
-							"       //dubblett isbn, ej unikt alltså\r",
+							"       //dubblett ISDN, ej unikt alltså. index 1\r",
 							"        { \"ISBN_nr\": \"335339993-3\",\r",
 							"            \"title\": \"Tvån hoppade jag över\",\r",
 							"            \"description\": \"Integer tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat.\\n\\nPraesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.\\n\\nMorbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.\",\r",
 							"            \"pages\": \"4980\",\r",
 							"            \"price\": \"1571.77\"\r",
-							"        }, */\r",
-							"        { //utan pris\r",
+							"        }, \r",
+							"        { //utan pris index 2\r",
 							"        \"ISBN_nr\": \"819485033-1\", \r",
 							"        \"title\": \"Tre kan man inte leka\", \r",
 							"        \"description\": \"Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.\", \r",
 							"        \"pages\": 350\r",
 							"        },\r",
 							"      \r",
-							"/*\r",
-							"        {//utan titel\r",
-							"        \"ISBN_nr\": \"749485033-X\", \r",
+							"        //utan titel index 3\r",
+							"        { \"ISBN_nr\": \"749485033-X\", \r",
 							"        \"description\": \"4Commodo placerat.\\n\\nPraesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.\\n\\nMorbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.\",\r",
 							"         \"pages\": 4252, \r",
 							"         \"price\": 4000\r",
 							"      }\r",
-							"  */      \r",
+							"\r",
 							"];\r",
 							"    pm.environment.set(\"counter\", 0);\r",
-							"    pm.environment.set(\"mockData\", JSON.stringify(mockData));\r",
+							"    pm.environment.set(\"badMockData\", JSON.stringify(badMockData));\r",
 							" }\r",
 							"\r",
 							" // Reading/parsing environment variables back to local variables\r",
 							" let counter = pm.environment.get(\"counter\") / 1;\r",
-							" let mockData = JSON.parse(pm.environment.get(\"mockData\"));\r",
-							" let {ISBN_nr,title,description,pages,price} = mockData[counter]\r",
+							" let badMockData = JSON.parse(pm.environment.get(\"badMockData\"));\r",
+							" let {ISBN_nr,title,description,pages,price} = badMockData[counter]\r",
 							" // Save to environemnt for use in query\r",
 							" pm.environment.set('ISBN_nr', ISBN_nr);\r",
 							" pm.environment.set('title', title);\r",
@@ -285,11 +275,62 @@
 		},
 		{
 			"name": "GET BOOKS",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a301b215-3544-49c3-b0b7-5dec4ba63392",
+						"exec": [
+							"// Reading/parsing environment variables back to local variables\r",
+							" let counter = pm.environment.get(\"counter\") / 1;\r",
+							" let mockData = JSON.parse(pm.environment.get(\"mockData\"));\r",
+							"let {id} = mockData[counter]\r",
+							" \r",
+							"  // Save to environment variable to use in the request\r",
+							"  pm.environment.set('id', id);\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "abe55f5b-7d6b-4714-a559-6d8dcd506f2a",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"console.log(\"response från get\", response)\r",
+							"// Reading/parsing environment variables back to local variables\r",
+							"let counter = pm.environment.get(\"counter\") / 1;\r",
+							"\r",
+							"let mockData = JSON.parse(pm.environment.get(\"mockData\"));\r",
+							"\r",
+							"// Compare with the response from the database;\r",
+							"pm.test('data in db should equal previously mock data in POST-books', function(){\r",
+							"     pm.expect(response, counter + ' used').to.deep.equal(mockData[counter]);\r",
+							"});\r",
+							"\r",
+							"// Increment the counter and save to environment\r",
+							"counter++;\r",
+							"pm.environment.set('counter', counter);\r",
+							"\r",
+							"// Run request again if more mockdata\r",
+							"if(mockData[counter]){\r",
+							"    postman.setNextRequest('GET BOOKS');\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/api/books/79",
+					"raw": "http://localhost:3000/api/books/{{id}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -298,11 +339,135 @@
 					"path": [
 						"api",
 						"books",
-						"79"
+						"{{id}}"
 					]
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "GET BOOKS negative test",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "bf3b012f-5a0f-4ae1-a3d3-74ede63f3410",
+						"exec": [
+							"// Reading/parsing environment variables back to local variables\r",
+							" let counter = pm.environment.get(\"counter\") / 1;\r",
+							" let badMockData = JSON.parse(pm.environment.get(\"badMockData\"));\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "198311a5-8266-44fa-a036-01684dcaf248",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"\r",
+							"// Reading/parsing environment variables back to local variables\r",
+							"let counter = pm.environment.get(\"counter\") / 1;\r",
+							"let badMockData = JSON.parse(pm.environment.get(\"badMockData\"));\r",
+							"\r",
+							"if(counter===0){\r",
+							"let noISBN=badMockData[counter].title\r",
+							"let expectedFalse=response.some(x=>x.title===noISBN)\r",
+							"pm.test('Lack of ISBN should be rejected', function (){\r",
+							"    pm.expect(expectedFalse, 'No, sorry we found data with missing ISBN-nr in the db').to.be.false;\r",
+							"});\r",
+							"}\r",
+							"\r",
+							"if(counter===1){\r",
+							"let notUniqueISBN=badMockData[counter].title\r",
+							"let expectedFalseReply=response.some(x=>x.title===notUniqueISBN)\r",
+							"pm.test('Not unique ISBN should be rejected', function (){\r",
+							"    pm.expect(expectedFalseReply, 'No, sorry we found a non unique ISBN i the db').to.be.false;\r",
+							"});\r",
+							"}\r",
+							"\r",
+							"if(counter===2){\r",
+							"let noPrice=badMockData[counter].title;\r",
+							"let expectedFalseReply=response.some(x=>x.title===noPrice);\r",
+							"pm.test('No price should be rejected', function (){\r",
+							"    pm.expect(expectedFalseReply, 'No, sorry we found data without price in the db').to.be.false;\r",
+							"});\r",
+							"}\r",
+							"\r",
+							"if(counter===3){\r",
+							"let noTitle=badMockData[counter].ISBN_nr;\r",
+							"console.log(\"noTitle?,\",noTitle)\r",
+							"let expectedFalseReply=response.some(x=>x.ISBN_nr===noTitle);\r",
+							"pm.test('No title should be rejected', function (){\r",
+							"    pm.expect(expectedFalseReply, 'No, sorry we found data without title in the db').to.be.false;\r",
+							"});\r",
+							"}\r",
+							"\r",
+							"// Increment the counter and save to environment\r",
+							"counter++;\r",
+							"pm.environment.set('counter', counter);\r",
+							"\r",
+							"// Run request again if more mockdata\r",
+							"if(badMockData[counter]){\r",
+							"    postman.setNextRequest('GET BOOKS negative test');\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/books",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"books"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "4a4c8345-b035-4ca2-a1df-3517b2ea2caf",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "da9f37fa-9e31-4331-9ca6-bc1e37e50a1b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "2b485981-7a1d-41fa-a128-4f2b810f2283",
+			"value": "",
+			"type": "string"
 		}
 	],
 	"protocolProfileBehavior": {}
