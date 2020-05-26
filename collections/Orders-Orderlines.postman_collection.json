@@ -75,8 +75,12 @@
 							"orderCounter++;\r",
 							"pm.environment.set('orderCounter', orderCounter);\r",
 							"\r",
+							"if(orderCounter===3){\r",
+							"    orderCounter=0;\r",
+							"}\r",
+							"\r",
 							"if(orderFakeData[orderCounter]){\r",
-							"    postman.setNextRequest('http://localhost:3000/api/orders')\r",
+							"    postman.setNextRequest('POST-orders')\r",
 							"}"
 						],
 						"type": "text/javascript"
@@ -219,8 +223,13 @@
 							"orderLineCounter++;\r",
 							"pm.environment.set('orderLineCounter', orderLineCounter);\r",
 							"\r",
+							"//Lägger in så man kan köra om testen i en collection runner utan att SQLite säger ifrån.\r",
+							"if(orderLineCounter===3){\r",
+							"    orderLineCounter=0;\r",
+							"}\r",
+							"\r",
 							"if(orderLineFakeData[orderLineCounter]){\r",
-							"    postman.setNextRequest('http://localhost:3000/api/orderlines')\r",
+							"    postman.setNextRequest('POST-orderlines')\r",
 							"}"
 						],
 						"type": "text/javascript"
