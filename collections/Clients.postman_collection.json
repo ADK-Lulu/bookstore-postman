@@ -233,7 +233,15 @@
 							"let lastClient= response.pop();\r",
 							"\r",
 							"let lastClientId=lastClient.id;\r",
-							"pm.environment.set('lastClientId', lastClientId);"
+							"pm.environment.set('lastClientId', lastClientId);\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('ID exists', function(){\r",
+							"    pm.expect(lastClientId).to.exist; \r",
+							"});"
 						],
 						"type": "text/javascript"
 					}
@@ -282,13 +290,13 @@
 	],
 	"variable": [
 		{
-			"id": "07bd5d80-153b-4e54-bdbf-af0f7d32cfba",
+			"id": "682c4812-ef18-4afc-b1ef-c34fca1dc91d",
 			"key": "id",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "3e012e3c-f1b2-46bf-8a9c-43353ce3305a",
+			"id": "dd93765d-e27f-4b86-8511-1a08c5a4cd2e",
 			"key": "lastClientId",
 			"value": "",
 			"type": "string"
