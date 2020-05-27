@@ -147,11 +147,11 @@
 							"    pm.response.to.have.status(200);\r",
 							"});\r",
 							"\r",
-							"/* TODO Får inte denna att funka...\r",
-							"pm.test('Predicted lastID', function(){\r",
-							"    pm.expect(response.lastID).to.equal(id);\r",
-							"})\r",
-							"*/\r",
+							"if(counter===3){\r",
+							"    pm.test('Predicted lastID', function(){\r",
+							"        pm.expect(response.lastID).to.equal(id);\r",
+							"    })\r",
+							"}\r",
 							"\r",
 							"// Increment the counter and save to environment\r",
 							"counter++;\r",
@@ -517,6 +517,17 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "delete test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -543,7 +554,7 @@
 	],
 	"variable": [
 		{
-			"id": "8ae2f9fd-a7ee-40b8-8dd6-3acbe728c657",
+			"id": "97fe098c-0e8b-4b87-83c5-f9451633c33e",
 			"value": "",
 			"type": "string"
 		}
