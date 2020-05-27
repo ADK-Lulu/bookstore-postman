@@ -9,6 +9,16 @@ app.use(function (error, req, res, next) {
   else { next(); }
 });
 
+const operators = [
+  '>=',
+  '!=',
+  '<=',
+  '>=',
+  '=',
+  '>',
+  '<',
+];
+
 async function start() {
   let db = await sqlite.open('./database/bookstore.db');
 
@@ -18,24 +28,30 @@ async function start() {
     let query = decodeURI(req.url.split('?')[1]).split('&');
     let q2 = [];
     let vals = [];
+    let op;
     for (let a of query) {
-      let operator = a.split(/\w*/g).join('');
-      let [key, val] = a.split(operator);
-      q2.push(key + operator + '?');
-      vals.push(isNaN(+val) ? val : +val);
+      for (let o of operators) {
+        if (a.includes(o)) {
+          op = o;
+          break;
+        }
+      }
+      let [key, val] = a.split(op);
+      q2.push(key + op + '?');
+      vals.push(val);
     }
     q2 = q2.join(' AND ');
     let r;
     let q3 = `SELECT * FROM ${entity} WHERE ${q2}`;
     r = await db.all(q3, vals).catch(e => r = e);
-    res.json([r, q3]);
+    res.json(r);
   });
 
   app.get('/api/*/:id', async (req, res) => {
     let entity = req.url.split('/api/')[1].split('/')[0];
     let r;
     r = await db.all(`SELECT * FROM ${entity} WHERE id = ${req.params.id} `).catch(e => r = e);
-    res.json(r[0]);
+    res.json(r);
   });
 
   app.get('/api/*', async (req, res) => {
