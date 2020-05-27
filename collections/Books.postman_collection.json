@@ -130,6 +130,90 @@
 			"response": []
 		},
 		{
+			"name": "DELETE-books",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "57e0e8ac-ecf6-473d-8aad-d271fb4327bf",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"\r",
+							"let counter = pm.environment.get(\"counter\") / 1;\r",
+							"let mockData = JSON.parse(pm.environment.get(\"mockData\"));\r",
+							"let id=pm.environment.get(\"id\");\r",
+							"\r",
+							"pm.test(\"Correct status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"/* TODO Får inte denna att funka...\r",
+							"pm.test('Predicted lastID', function(){\r",
+							"    pm.expect(response.lastID).to.equal(id);\r",
+							"})\r",
+							"*/\r",
+							"\r",
+							"// Increment the counter and save to environment\r",
+							"counter++;\r",
+							"pm.environment.set('counter', counter);\r",
+							"\r",
+							"// Run request again if more mockdata\r",
+							"if(mockData[counter]){\r",
+							"    postman.setNextRequest('DELETE-books');\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8f66196f-9045-46fd-8474-e023409f4f99",
+						"exec": [
+							"// Reading/parsing environment variables back to local variables\r",
+							"let counter = pm.environment.get(\"counter\") / 1;\r",
+							"let mockData = JSON.parse(pm.environment.get(\"mockData\"));\r",
+							"let {id} = mockData[counter]\r",
+							"\r",
+							" \r",
+							"  // Save to environment variable to use in the request\r",
+							"  pm.environment.set('id', id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/books/{{id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"books",
+						"{{id}}"
+					]
+				},
+				"description": "6 correct 2 bad"
+			},
+			"response": []
+		},
+		{
 			"name": "POST-books negative test",
 			"event": [
 				{
@@ -282,15 +366,12 @@
 						"id": "a301b215-3544-49c3-b0b7-5dec4ba63392",
 						"exec": [
 							"// Reading/parsing environment variables back to local variables\r",
-							" let counter = pm.environment.get(\"counter\") / 1;\r",
-							" let mockData = JSON.parse(pm.environment.get(\"mockData\"));\r",
+							"let counter = pm.environment.get(\"counter\") / 1;\r",
+							"let mockData = JSON.parse(pm.environment.get(\"mockData\"));\r",
 							"let {id} = mockData[counter]\r",
 							" \r",
 							"  // Save to environment variable to use in the request\r",
-							"  pm.environment.set('id', id);\r",
-							"\r",
-							"\r",
-							""
+							"  pm.environment.set('id', id);"
 						],
 						"type": "text/javascript"
 					}
@@ -301,10 +382,8 @@
 						"id": "abe55f5b-7d6b-4714-a559-6d8dcd506f2a",
 						"exec": [
 							"let response = pm.response.json();\r",
-							"console.log(\"response från get\", response)\r",
 							"// Reading/parsing environment variables back to local variables\r",
 							"let counter = pm.environment.get(\"counter\") / 1;\r",
-							"\r",
 							"let mockData = JSON.parse(pm.environment.get(\"mockData\"));\r",
 							"\r",
 							"// Compare with the response from the database;\r",
@@ -319,8 +398,7 @@
 							"// Run request again if more mockdata\r",
 							"if(mockData[counter]){\r",
 							"    postman.setNextRequest('GET BOOKS');\r",
-							"}\r",
-							""
+							"}"
 						],
 						"type": "text/javascript"
 					}
@@ -465,7 +543,7 @@
 	],
 	"variable": [
 		{
-			"id": "2b485981-7a1d-41fa-a128-4f2b810f2283",
+			"id": "8ae2f9fd-a7ee-40b8-8dd6-3acbe728c657",
 			"value": "",
 			"type": "string"
 		}
