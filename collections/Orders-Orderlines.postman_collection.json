@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "ff6718d6-af70-427a-acdf-c278f5b5d544",
+		"_postman_id": "a382248c-9924-40f9-8099-feddfc06ba4c",
 		"name": "Orders-Orderlines",
 		"description": "Tests for orders and orderlines",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -12,7 +12,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "2f42ef72-4029-41ab-8b2a-e6b19d7334e3",
+						"id": "6ae36f92-9831-4a4a-9312-9c47a6f60c32",
 						"exec": [
 							"if(!pm.environment.has(\"orderFakeData\")){\r",
 							"    let orderFakeData=[\r",
@@ -55,7 +55,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "80805eb1-faa4-4e61-bb60-b2057ddac463",
+						"id": "5b5e7a97-baa1-461c-85c8-357220e215a6",
 						"exec": [
 							"let response = pm.response.json();\r",
 							"let orderCounter = pm.environment.get(\"orderCounter\") / 1;\r",
@@ -75,8 +75,12 @@
 							"orderCounter++;\r",
 							"pm.environment.set('orderCounter', orderCounter);\r",
 							"\r",
+							"if(orderCounter===3){\r",
+							"    orderCounter=0;\r",
+							"}\r",
+							"\r",
 							"if(orderFakeData[orderCounter]){\r",
-							"    postman.setNextRequest('http://localhost:3000/api/orders')\r",
+							"    postman.setNextRequest('POST-orders')\r",
 							"}"
 						],
 						"type": "text/javascript"
@@ -159,7 +163,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "90ec55ba-0172-4af3-9857-82faa8d6a0d6",
+						"id": "626a0c25-e5ac-49a1-a09e-0ee06a1b11d3",
 						"exec": [
 							"if(!pm.environment.has(\"orderLineFakeData\")){\r",
 							"    let orderLineFakeData=[\r",
@@ -199,7 +203,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "3fa9c203-2c91-47e0-8b03-6a112f13c4d0",
+						"id": "55adc5de-328a-46f5-ba7b-d669e79267e2",
 						"exec": [
 							"let response = pm.response.json();\r",
 							"let orderLineCounter = pm.environment.get(\"orderLineCounter\") / 1;\r",
@@ -219,8 +223,13 @@
 							"orderLineCounter++;\r",
 							"pm.environment.set('orderLineCounter', orderLineCounter);\r",
 							"\r",
+							"//Lägger in så man kan köra om testen i en collection runner utan att SQLite säger ifrån.\r",
+							"if(orderLineCounter===3){\r",
+							"    orderLineCounter=0;\r",
+							"}\r",
+							"\r",
 							"if(orderLineFakeData[orderLineCounter]){\r",
-							"    postman.setNextRequest('http://localhost:3000/api/orderlines')\r",
+							"    postman.setNextRequest('POST-orderlines')\r",
 							"}"
 						],
 						"type": "text/javascript"
@@ -252,6 +261,224 @@
 					]
 				},
 				"description": "Tests for POST orderlines"
+			},
+			"response": []
+		},
+		{
+			"name": "GET-lastOrder",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "da6987bd-9e48-4f9a-a29b-7f340c0e4c95",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3f1fffb5-91ee-43c8-b166-b536f7ab3ced",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastOrder= response.pop();\r",
+							"\r",
+							"let lastOrderId=lastOrder.id;\r",
+							"pm.environment.set('lastOrderId', lastOrderId);\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('ID exists', function(){\r",
+							"    pm.expect(lastOrderId).to.exist; \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE-orders",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c9a1309d-3a64-4679-afda-4fc3e350d074",
+						"exec": [
+							"if(!pm.environment.has(\"lastOrderId\")){\r",
+							"    postman.setNextRequest(\"GET-lastOrder\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"lastOrderId\", pm.environment.get(\"lastOrderId\"));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "b059a7a5-5787-40c3-8d16-429d1748ac2d",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastOrderID = pm.environment.get(\"lastOrderId\");\r",
+							"\r",
+							"pm.test('correct change', function (){\r",
+							"    pm.expect(response.changes).to.equal(1);\r",
+							"});\r",
+							"\r",
+							"pm.test('Correct status', function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('Correct lastID', function(){\r",
+							"    pm.expect(response.lastID).to.equal(lastOrderID);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orders/{{lastOrderId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"{{lastOrderId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET-lastOrderline",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "de0bb8a4-37f3-4434-afc6-c2d59a4c63c8",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastOrderline= response.pop();\r",
+							"\r",
+							"let lastOrderlineId=lastOrderline.id;\r",
+							"pm.environment.set('lastOrderlineId', lastOrderlineId);\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('ID exists', function(){\r",
+							"    pm.expect(lastOrderlineId).to.exist; \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orderlines",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orderlines"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE-orderlines",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "099afafe-4fca-4986-8345-535b161d2cc6",
+						"exec": [
+							"if(!pm.environment.has(\"lastOrderlineId\")){\r",
+							"    postman.setNextRequest(\"GET-lastOrderline\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"lastOrderlineId\", pm.environment.get(\"lastOrderlineId\"));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3fc64626-05a7-4418-8bd8-367e0c87f66e",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastOrderlineID = pm.environment.get(\"lastOrderlineId\");\r",
+							"\r",
+							"pm.test('correct change', function (){\r",
+							"    pm.expect(response.changes).to.equal(1);\r",
+							"});\r",
+							"\r",
+							"pm.test('Correct status', function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('Correct lastID', function(){\r",
+							"    pm.expect(response.lastID).to.equal(lastOrderlineID);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orderlines/{{lastOrderlineId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orderlines",
+						"{{lastOrderlineId}}"
+					]
+				}
 			},
 			"response": []
 		}

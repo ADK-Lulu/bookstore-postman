@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "f58abf4e-9f54-450f-9463-cbb276310bfa",
+		"_postman_id": "aef154ae-c5fb-4297-8758-abf8ad2bf9ce",
 		"name": "Clients",
 		"description": "Different test to test the bookstore",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -45,7 +45,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "f3cea504-ffa4-475e-b245-cbcdbb607d91",
+						"id": "234fc876-a206-47cb-9548-15cfcbe2f0c1",
 						"exec": [
 							"if (!pm.environment.has(\"mockClients\")) {\r",
 							"  let mockClients = [\r",
@@ -75,7 +75,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "2732bbcb-108e-462c-a4d4-8020ee57703d",
+						"id": "2308347f-dba0-4e56-bd40-ea2a64b357e7",
 						"exec": [
 							"let response = pm.response.json();\r",
 							"let counter = pm.environment.get(\"counter\") / 1;\r",
@@ -136,6 +136,170 @@
 				"description": "Create 3 new clients"
 			},
 			"response": []
+		},
+		{
+			"name": "DELETE-clients",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9765874b-75a1-419e-8229-3e6657799b6b",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastClientID = pm.environment.get(\"lastClientId\");\r",
+							"\r",
+							"pm.test('correct change', function (){\r",
+							"    pm.expect(response.changes).to.equal(1);\r",
+							"});\r",
+							"\r",
+							"pm.test('Correct status', function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('Correct lastID', function(){\r",
+							"    pm.expect(response.lastID).to.equal(lastClientID);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "0d24d729-cb69-431e-bf19-378c98c60cb8",
+						"exec": [
+							"if(!pm.environment.has(\"lastClientId\")){\r",
+							"    postman.setNextRequest(\"GET-lastClient\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"lastClientId\", pm.environment.get(\"lastClientId\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/clients/{{lastClientId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"clients",
+						"{{lastClientId}}"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Tests with DELETE clients"
+			},
+			"response": []
+		},
+		{
+			"name": "GET-lastClient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e0452562-525e-418c-86fa-828db5ff6bf0",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastClient= response.pop();\r",
+							"\r",
+							"let lastClientId=lastClient.id;\r",
+							"pm.environment.set('lastClientId', lastClientId);\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('ID exists', function(){\r",
+							"    pm.expect(lastClientId).to.exist; \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/clients",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"clients"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "13775731-bf73-4634-acaa-436319a152f4",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "ebe4e5d7-a37b-4bce-afe9-b2d11dda2f1c",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "682c4812-ef18-4afc-b1ef-c34fca1dc91d",
+			"key": "id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "dd93765d-e27f-4b86-8511-1a08c5a4cd2e",
+			"key": "lastClientId",
+			"value": "",
+			"type": "string"
 		}
 	],
 	"protocolProfileBehavior": {}

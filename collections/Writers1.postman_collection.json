@@ -108,8 +108,12 @@
 							"counter++;\r",
 							"pm.environment.set('counter', counter);\r",
 							"\r",
+							"if(counter===3){\r",
+							"    counter=0;\r",
+							"}\r",
+							"\r",
 							"if(fakeData[counter]){\r",
-							"    postman.setNextRequest('http://localhost:3000/api/writers')\r",
+							"    postman.setNextRequest('POST-writers')\r",
 							"}"
 						],
 						"type": "text/javascript"
