@@ -23,7 +23,6 @@
 							"// Add the inserted id to the mockData and save to environment\r",
 							"mockData[counter].id= response.lastID;\r",
 							"\r",
-							"\r",
 							"pm.environment.set('mockData', JSON.stringify(mockData));\r",
 							"pm.test(\"Correct status\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -162,15 +161,20 @@
 							"     pm.expect(response).to.deep.include(mockData[counter]);\r",
 							"});\r",
 							"\r",
+							"let id= mockData[counter].id;\r",
 							"\r",
 							"// Increment the counter and save to environment\r",
 							"counter++;\r",
 							"pm.environment.set('counter', counter);\r",
+							"pm.environment.set('id',id)\r",
 							"\r",
 							"// Run request again if more mockdata\r",
 							"if(mockData[counter]){\r",
 							"    postman.setNextRequest('GET BOOKS');\r",
-							"}"
+							"}\r",
+							"\r",
+							"else {\r",
+							"  pm.environment.set(\"counter\", 0); } "
 						],
 						"type": "text/javascript"
 					}
@@ -204,13 +208,14 @@
 						"id": "26c289bb-4c5c-4a69-9838-18bd1b2e3014",
 						"exec": [
 							"let counter = pm.environment.get(\"counter\") / 1;\r",
-							"let mockData = JSON.parse(pm.environment.get(\"mockData\"));\r",
-							"let {id} = mockData[counter]\r",
-							"mockData.map(x=>x.price=10)\r",
 							"\r",
+							"let mockData = JSON.parse(pm.environment.get(\"mockData\"));\r",
+							"let id = mockData[counter].id\r",
+							"mockData.map(x=>x.price=10)\r",
 							"let {ISBN_nr,title,description,pages,price} = mockData[counter]\r",
 							" \r",
-							"pm.environment.set('id', id);\r",
+							"pm.environment.set('id',id);\r",
+							"\r",
 							"pm.environment.set('price',price)\r",
 							""
 						],
@@ -237,7 +242,6 @@
 							"        pm.expect(response.lastID).to.equal(id);\r",
 							"    })\r",
 							"}\r",
-							"\r",
 							"// Increment the counter and save to environment\r",
 							"counter++;\r",
 							"pm.environment.set('counter', counter);\r",
@@ -245,7 +249,10 @@
 							"// Run request again if more mockdata\r",
 							"if(mockData[counter]){\r",
 							"    postman.setNextRequest('PUT-books');\r",
-							"}"
+							"}\r",
+							"\r",
+							"else {\r",
+							"  pm.environment.set(\"counter\", 0); } "
 						],
 						"type": "text/javascript"
 					}
@@ -627,7 +634,7 @@
 	],
 	"variable": [
 		{
-			"id": "1ea406ac-55a3-4cdc-a262-935d516651be",
+			"id": "865c2d3a-35a3-4f59-95ee-95ad060db8b6",
 			"value": "",
 			"type": "string"
 		}
