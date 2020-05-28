@@ -7,6 +7,43 @@
 	},
 	"item": [
 		{
+			"name": "GET-orders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "78dc0cac-d271-4ae5-960d-4e8e511aa132",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders"
+					]
+				},
+				"description": "Tests for GET orders"
+			},
+			"response": []
+		},
+		{
 			"name": "POST-orders",
 			"event": [
 				{
@@ -19,22 +56,6 @@
 							"        {\r",
 							"        \"date\": \"2020-05-24 13:22:10\", \r",
 							"        \"client_email\":\"jsandeford2@ihg.com\"\r",
-							"        },\r",
-							"        {\r",
-							"        \"date\": \"2020-05-19 23:53:23\", \r",
-							"        \"client_email\":\"aanscombe5@shutterfly.com\"\r",
-							"        },\r",
-							"        {\r",
-							"        \"date\": \"2020-05-21 21:26:06\", \r",
-							"        \"client_email\":\"mhurdisc@ow.ly\"\r",
-							"        },\r",
-							"        {\r",
-							"        \"date\": \"2020-05-23 21:55:08\", \r",
-							"        \"client_email\":\"aforseithe@xing.com\"\r",
-							"        },\r",
-							"        {\r",
-							"        \"date\": \"2020-05-22 08:31:14\", \r",
-							"        \"client_email\":\"vballach0@jigsy.com\"\r",
 							"        }\r",
 							"    ]; \r",
 							"    pm.environment.set(\"orderCounter\", 0);\r",
@@ -75,12 +96,10 @@
 							"orderCounter++;\r",
 							"pm.environment.set('orderCounter', orderCounter);\r",
 							"\r",
-							"if(orderCounter===3){\r",
-							"    orderCounter=0;\r",
-							"}\r",
-							"\r",
 							"if(orderFakeData[orderCounter]){\r",
 							"    postman.setNextRequest('POST-orders')\r",
+							"}else {\r",
+							"  pm.environment.set(\"orderCounter\", 0);\r",
 							"}"
 						],
 						"type": "text/javascript"
@@ -116,7 +135,41 @@
 			"response": []
 		},
 		{
-			"name": "GET-orders",
+			"name": "GET-lastOrder Copy",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "625d617f-4d07-45b6-92d5-e4db759a3c10",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "a6d68205-a550-495c-93e1-d34ed6e45763",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastOrder= response.pop();\r",
+							"\r",
+							"let lastOrderId=lastOrder.id;\r",
+							"pm.environment.set('lastOrderId', lastOrderId);\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('ID exists', function(){\r",
+							"    pm.expect(lastOrderId).to.exist; \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -131,13 +184,168 @@
 						"api",
 						"orders"
 					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT-orders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "716291a6-37e3-45ad-80d7-02fcf15f9ec6",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let orderCounter = pm.environment.get(\"orderCounter\") / 1;\r",
+							"let orderFakeData = JSON.parse(pm.environment.get(\"orderFakeData\"));\r",
+							"\r",
+							"orderFakeData[orderCounter].id = response.insertId;\r",
+							"pm.environment.set('orderFakeData', JSON.stringify(orderFakeData));\r",
+							"\r",
+							"pm.test(\"Something in the response\", function () {\r",
+							"    pm.expect(response).to.not.equal(null);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Correct status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"orderCounter++;\r",
+							"pm.environment.set('orderCounter', orderCounter);\r",
+							"\r",
+							"if(orderFakeData[orderCounter]){\r",
+							"    postman.setNextRequest('PUT-orders')\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
 				},
-				"description": "Tests for GET orders"
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9bcf319f-38e2-49a5-a4c9-18128ce93fe6",
+						"exec": [
+							"pm.environment.set(\"lastOrderId\", pm.environment.get(\"lastOrderId\"));\r",
+							"let orderCounter = pm.environment.get(\"orderCounter\") / 1;\r",
+							"let orderFakeData = JSON.parse(pm.environment.get(\"orderFakeData\"));\r",
+							"orderFakeData.map(x=>x.client_email=\"jsandeford2@ihg.com\");\r",
+							"let {date, client_email} = orderFakeData[orderCounter]\r",
+							"\r",
+							"pm.environment.set('date', date);\r",
+							"pm.environment.set('client_email', client_email);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"client_email\":\"{{client_email}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/orders/{{lastOrderId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"{{lastOrderId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET-order after PUT",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4021a470-df14-4a52-a218-79465be4caf0",
+						"exec": [
+							"pm.environment.set(\"lastOrderId\", pm.environment.get(\"lastOrderId\"));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "12dbcd2b-8233-40d3-969d-875db1d28b8e",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastOrder= response.pop();\r",
+							"\r",
+							"let lastOrderId=lastOrder.id;\r",
+							"pm.environment.set('lastOrderId', lastOrderId);\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('ID exists', function(){\r",
+							"    pm.expect(lastOrderId).to.exist; \r",
+							"});\r",
+							"\r",
+							"console.log(lastOrder.client_email);\r",
+							"pm.test('Correct email', function(){\r",
+							"    pm.expect(lastOrder.client_email).to.include(['jsandeford2@ihg.com']);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orders/{{lastOrderId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"{{lastOrderId}}"
+					]
+				},
+				"description": "Checking that information after PUT is correct"
 			},
 			"response": []
 		},
 		{
 			"name": "GET-orderlines",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cbc08b3c-342a-4eb4-b8ba-7624b5ed5ea4",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -170,29 +378,15 @@
 							"        {\r",
 							"        \"amount\":\"2\", \r",
 							"        \"book_ISBN_nr\":\"614823801-2\"\r",
-							"        },\r",
-							"        {\r",
-							"        \"amount\":\"1\", \r",
-							"        \"book_ISBN_nr\":\"735896022-X\"\r",
-							"        },\r",
-							"        {\r",
-							"        \"amount\":\"5\", \r",
-							"        \"book_ISBN_nr\":\"335339993-3\"\r",
-							"        },\r",
-							"        {\r",
-							"        \"amount\":\"1\", \r",
-							"        \"book_ISBN_nr\":\"101032032-7\"\r",
-							"        },\r",
-							"\r",
+							"        }\r",
 							"    ]; \r",
 							"    pm.environment.set(\"orderLineCounter\", 0);\r",
 							"    pm.environment.set(\"orderLineFakeData\", JSON.stringify(orderLineFakeData));\r",
-							"\r",
 							"}\r",
 							"\r",
 							"let orderLineCounter = pm.environment.get(\"orderLineCounter\") / 1;\r",
 							"let orderLineFakeData = JSON.parse(pm.environment.get(\"orderLineFakeData\"));\r",
-							"let {amount, book_ISBN_nr} = orderLineFakeData[orderLineCounter]\r",
+							"let {amount, book_ISBN_nr} = orderLineFakeData[orderLineCounter];\r",
 							"\r",
 							"pm.environment.set('amount', amount);\r",
 							"pm.environment.set('book_ISBN_nr', book_ISBN_nr);"
@@ -223,13 +417,10 @@
 							"orderLineCounter++;\r",
 							"pm.environment.set('orderLineCounter', orderLineCounter);\r",
 							"\r",
-							"//Lägger in så man kan köra om testen i en collection runner utan att SQLite säger ifrån.\r",
-							"if(orderLineCounter===3){\r",
-							"    orderLineCounter=0;\r",
-							"}\r",
-							"\r",
 							"if(orderLineFakeData[orderLineCounter]){\r",
 							"    postman.setNextRequest('POST-orderlines')\r",
+							"}else {\r",
+							"  pm.environment.set(\"orderLineCounter\", 0);\r",
 							"}"
 						],
 						"type": "text/javascript"
@@ -265,6 +456,191 @@
 			"response": []
 		},
 		{
+			"name": "GET-lastOrderline Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6fda253d-c21a-4490-b8c1-881b4c2b8647",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastOrderline= response.pop();\r",
+							"\r",
+							"let lastOrderlineId=lastOrderline.id;\r",
+							"pm.environment.set('lastOrderlineId', lastOrderlineId);\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('ID exists', function(){\r",
+							"    pm.expect(lastOrderlineId).to.exist; \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orderlines",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orderlines"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT-orderlines",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8bc486a9-7a3a-4a1e-b68a-c942e327a534",
+						"exec": [
+							"pm.environment.set(\"lastOrderlineId\", pm.environment.get(\"lastOrderlineId\"));\r",
+							"let orderLineCounter = pm.environment.get(\"orderLineCounter\") / 1;\r",
+							"let orderLineFakeData = JSON.parse(pm.environment.get(\"orderLineFakeData\"));\r",
+							"orderLineFakeData.map(x=>x.amount=4);\r",
+							"let {amount, book_ISBN_nr} = orderLineFakeData[orderLineCounter]\r",
+							"\r",
+							"pm.environment.set('amount', amount);\r",
+							"pm.environment.set('book_ISBN_nr', book_ISBN_nr);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "f8201b83-2b4f-4233-8f21-f8789c4b4cf4",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let orderLineCounter = pm.environment.get(\"orderLineCounter\") / 1;\r",
+							"let orderLineFakeData = JSON.parse(pm.environment.get(\"orderLineFakeData\"));\r",
+							"let lastOrderlineID = pm.environment.get(\"lastOrderlineId\");\r",
+							"\r",
+							"orderLineFakeData[orderLineCounter].id = response.insertId;\r",
+							"pm.environment.set('orderLineFakeData', JSON.stringify(orderLineFakeData));\r",
+							"\r",
+							"pm.test(\"Something in the response\", function () {\r",
+							"    pm.expect(response).to.not.equal(null);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Correct status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"orderLineCounter++;\r",
+							"pm.environment.set('orderLineCounter', orderLineCounter);\r",
+							"\r",
+							"if(orderLineFakeData[orderLineCounter]){\r",
+							"    postman.setNextRequest('PUT-orderlines')\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"amount\":\"{{amount}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/orderlines/{{lastOrderLineId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orderlines",
+						"{{lastOrderLineId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET-orderlines after PUT",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "d045f2e1-f767-413a-952e-67df25921a9b",
+						"exec": [
+							"pm.environment.set(\"lastOrderlineId\", pm.environment.get(\"lastOrderlineId\"));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3c16ac44-6314-469c-be90-a66f4ac53ceb",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastOrderline= response.pop();\r",
+							"\r",
+							"let lastOrderlineId=lastOrderline.id;\r",
+							"pm.environment.set('lastOrderlineId', lastOrderlineId);\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('ID exists', function(){\r",
+							"    pm.expect(lastOrderlineId).to.exist; \r",
+							"});\r",
+							"\r",
+							"/*console.log(lastOrderline.amount);\r",
+							"pm.test('Correct amount', function(){\r",
+							"    pm.expect(lastOrderline.amount).to.include(\"4\");\r",
+							"})*/"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orderlines/{{lastOrderlineId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orderlines",
+						"{{lastOrderlineId}}"
+					]
+				},
+				"description": "Checking orderlines after PUT"
+			},
+			"response": []
+		},
+		{
 			"name": "GET-lastOrder",
 			"event": [
 				{
@@ -281,6 +657,420 @@
 					"listen": "test",
 					"script": {
 						"id": "3f1fffb5-91ee-43c8-b166-b536f7ab3ced",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastOrder= response.pop();\r",
+							"\r",
+							"let lastOrderId=lastOrder.id;\r",
+							"pm.environment.set('lastOrderId', lastOrderId);\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('ID exists', function(){\r",
+							"    pm.expect(lastOrderId).to.exist; \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET-lastOrderline",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "de0bb8a4-37f3-4434-afc6-c2d59a4c63c8",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastOrderline= response.pop();\r",
+							"\r",
+							"let lastOrderlineId=lastOrderline.id;\r",
+							"pm.environment.set('lastOrderlineId', lastOrderlineId);\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('ID exists', function(){\r",
+							"    pm.expect(lastOrderlineId).to.exist; \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orderlines",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orderlines"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET-orderlinesXorders",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "d607faf4-a880-4379-a020-9a751db15b27",
+						"exec": [
+							"pm.environment.set(\"lastOrderId\", pm.environment.get(\"lastOrderId\"));\r",
+							"pm.environment.set(\"lastOrderlineId\", pm.environment.get(\"lastOrderlineId\"));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "680b8210-43a7-4f70-801d-a097e8e7f51f",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastOrderPlaced= response.pop(); \r",
+							"let newOrderCounter = pm.environment.get(\"newOrderCounter\") / 1;\r",
+							"let newOrderFakeData = JSON.parse(pm.environment.get(\"newOrderFakeData\"));\r",
+							"let lastOrderId = pm.environment.get(\"lastOrderId\");\r",
+							"let lastOrderlineId = pm.environment.get(\"lastOrderlineId\");\r",
+							"//Use in another request\r",
+							"let lastOrderPlacedId= lastOrderPlaced.id; \r",
+							"pm.environment.set('lastOrderPlacedId', lastOrderPlacedId);\r",
+							"\r",
+							"pm.environment.set('newOrderFakeData', JSON.stringify(newOrderFakeData));\r",
+							"\r",
+							"pm.test(\"Something in the response\", function () {\r",
+							"    pm.expect(response).to.not.equal(null);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Correct status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"/*\r",
+							"pm.test('Correct orderId', function(){\r",
+							"    pm.expect(lastOrderPlaced.order_id).to.equal(lastOrderId);\r",
+							"})\r",
+							"console.log(lastOrderID, lastOrderlineID);\r",
+							"\r",
+							"pm.test('Correct orderlineId', function(){\r",
+							"    pm.expect(lastOrderPlaced.order_line_id).to.equal(lastOrderlineId);\r",
+							"})\r",
+							"*/\r",
+							"newOrderCounter++;\r",
+							"pm.environment.set('newOrderCounter', newOrderCounter);\r",
+							"\r",
+							"if(newOrderFakeData[newOrderCounter]){\r",
+							"    postman.setNextRequest('GET-orderlinesXorders')\r",
+							"}else {\r",
+							"  pm.environment.set(\"newOrderCounter\", 0);\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orderlinesXorders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orderlinesXorders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST-orderlinesXorders",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9e3e3081-e252-4eb2-8093-cb1cac9d38af",
+						"exec": [
+							"let lastOrderId = pm.environment.get(\"lastOrderId\");\r",
+							"pm.environment.set(\"lastOrderId\", lastOrderId);\r",
+							"let lastOrderlineId = pm.environment.get(\"lastOrderlineId\")\r",
+							"pm.environment.set(\"lastOrderlineId\");\r",
+							"\r",
+							"if(lastOrderlineId===undefined || lastOrderId===undefined){\r",
+							"    throw new Error('Nothing to add to database');\r",
+							"}\r",
+							"if(!pm.environment.has(\"newOrderFakeData\")){\r",
+							"    let newOrderFakeData=[\r",
+							"        {\r",
+							"        \"order_line_id\": lastOrderlineId,\r",
+							"        \"order_id\": lastOrderId\r",
+							"        }\r",
+							"    ]; \r",
+							"    pm.environment.set(\"newOrderCounter\", 0);\r",
+							"    pm.environment.set(\"newOrderFakeData\", JSON.stringify(newOrderFakeData));\r",
+							"}\r",
+							"\r",
+							"let newOrderCounter = pm.environment.get(\"newOrderCounter\") / 1;\r",
+							"let newOrderFakeData = JSON.parse(pm.environment.get(\"newOrderFakeData\"));\r",
+							"let {order_line_id, order_id} = newOrderFakeData[newOrderCounter]\r",
+							"\r",
+							"pm.environment.set('order_line_id', order_line_id);\r",
+							"pm.environment.set('order_id', order_id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "6073461d-8543-4386-841b-3a972498b80d",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let newOrderCounter = pm.environment.get(\"newOrderCounter\") / 1;\r",
+							"let newOrderFakeData = JSON.parse(pm.environment.get(\"newOrderFakeData\"));\r",
+							"\r",
+							"newOrderFakeData[newOrderCounter].id = response.insertId;\r",
+							"pm.environment.set('newOrderFakeData', JSON.stringify(newOrderFakeData));\r",
+							"\r",
+							"pm.test(\"Something in the response\", function () {\r",
+							"    pm.expect(response).to.not.equal(null);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Correct status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"newOrderCounter++;\r",
+							"pm.environment.set('newOrderCounter', newOrderCounter);\r",
+							"\r",
+							"if(newOrderFakeData[newOrderCounter]){\r",
+							"    postman.setNextRequest('POST-orderlinesXorders')\r",
+							"}else {\r",
+							"  pm.environment.set(\"newOrderCounter\", 0);\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"order_line_id\": \"{{order_line_id}}\",\r\n    \"order_id\":\"{{order_id}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/orderlinesXorders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orderlinesXorders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT-orderlinesXorders",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "095127ad-280e-43cf-a371-e96cc0269b0a",
+						"exec": [
+							"pm.environment.set(\"lastOrderPlacedId\", pm.environment.get(\"lastOrderPlacedId\"));\r",
+							"let newOrderCounter = pm.environment.get(\"newOrderCounter\") / 1;\r",
+							"let newOrderFakeData = JSON.parse(pm.environment.get(\"newOrderFakeData\"));\r",
+							"newOrderFakeData.map(x=>x.amount=5);\r",
+							"let {order_line_id, order_id} = newOrderFakeData[newOrderCounter]\r",
+							"\r",
+							"pm.environment.set('order_line_id', order_line_id);\r",
+							"pm.environment.set('order_id', order_id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1f0d9eb5-6878-4d39-9caf-38237343b46c",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let newOrderCounter = pm.environment.get(\"newOrderCounter\") / 1;\r",
+							"let newOrderFakeData = JSON.parse(pm.environment.get(\"newOrderFakeData\"));\r",
+							"\r",
+							"newOrderFakeData[newOrderCounter].id = response.insertId;\r",
+							"pm.environment.set('newOrderFakeData', JSON.stringify(newOrderFakeData));\r",
+							"\r",
+							"pm.test(\"Something in the response\", function () {\r",
+							"    pm.expect(response).to.not.equal(null);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Correct status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"newOrderCounter++;\r",
+							"pm.environment.set('newOrderCounter', newOrderCounter);\r",
+							"\r",
+							"if(newOrderFakeData[newOrderCounter]){\r",
+							"    postman.setNextRequest('PUT-orderlinesXorders')\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"order_id\":\"{{order_id}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/orderlinesXorders/{{lastOrderPlacedId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orderlinesXorders",
+						"{{lastOrderPlacedId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET-orderlinesXorders after PUT",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c3db8446-84ee-4d8a-a724-276cffb52476",
+						"exec": [
+							"pm.environment.set(\"lastOrderPlacedId\", pm.environment.get(\"lastOrderPlacedId\"));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "78c9bfb4-0b0e-4640-9b68-525e00a255af",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastOrderline= response.pop();\r",
+							"\r",
+							"let lastOrderlineId=lastOrderline.id;\r",
+							"pm.environment.set('lastOrderlineId', lastOrderlineId);\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('ID exists', function(){\r",
+							"    pm.expect(lastOrderlineId).to.exist; \r",
+							"});\r",
+							"\r",
+							"console.log(lastOrderline.amount);\r",
+							"pm.test('Correct amount', function(){\r",
+							"    pm.expect(lastOrderline.amount).to.include(4);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orderlinesXorders/{{lastOrderPlacedId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orderlinesXorders",
+						"{{lastOrderPlacedId}}"
+					]
+				},
+				"description": "Checking if information is correct after PUT "
+			},
+			"response": []
+		},
+		{
+			"name": "GET-lastOrder Copy",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "04922479-5cad-4dd5-a62f-44635e1319d3",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "68bff1fd-e5bd-49dc-b20e-87700da968cf",
 						"exec": [
 							"let response = pm.response.json();\r",
 							"let lastOrder= response.pop();\r",
@@ -379,12 +1169,12 @@
 			"response": []
 		},
 		{
-			"name": "GET-lastOrderline",
+			"name": "GET-lastOrderline Copy",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "de0bb8a4-37f3-4434-afc6-c2d59a4c63c8",
+						"id": "c5f8528d-fb9b-44dc-b2bc-49cf491a49ce",
 						"exec": [
 							"let response = pm.response.json();\r",
 							"let lastOrderline= response.pop();\r",
@@ -479,6 +1269,67 @@
 						"{{lastOrderlineId}}"
 					]
 				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE-lastOrderPlaced",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ee248e28-5930-45a2-9620-92f80e78d6d9",
+						"exec": [
+							"if(!pm.environment.has(\"lastOrderPlacedId\")){\r",
+							"    postman.setNextRequest(\"GET-orderlinesXorders\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"lastOrderPlacedId\", pm.environment.get(\"lastOrderPlacedId\"));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1a7cc4d9-3336-4250-830b-0b79828e94e5",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastOrderPlacedID = pm.environment.get(\"lastOrderPlacedId\");\r",
+							"\r",
+							"pm.test('correct change', function (){\r",
+							"    pm.expect(response.changes).to.equal(1);\r",
+							"});\r",
+							"\r",
+							"pm.test('Correct status', function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('Correct lastID', function(){\r",
+							"    pm.expect(response.lastID).to.equal(lastOrderPlacedID);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orderlinesXorders/{{lastOrderPlacedId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orderlinesXorders",
+						"{{lastOrderPlacedId}}"
+					]
+				},
+				"description": "DELTE on the last object in the \"orderlinesXorders\"-table "
 			},
 			"response": []
 		}
