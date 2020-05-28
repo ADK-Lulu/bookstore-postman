@@ -125,7 +125,7 @@
 						"books"
 					]
 				},
-				"description": "6 correct 2 bad"
+				"description": "4 good ones"
 			},
 			"response": []
 		},
@@ -158,10 +158,10 @@
 							"let counter = pm.environment.get(\"counter\") / 1;\r",
 							"let mockData = JSON.parse(pm.environment.get(\"mockData\"));\r",
 							"\r",
-							"// Compare with the response from the database;\r",
-							"pm.test('data in db should equal previously mock data in POST-books', function(){\r",
-							"     pm.expect(response, counter + ' used').to.deep.equal(mockData[counter]);\r",
+							"pm.test('The data in db should include the new mockdata', function(){\r",
+							"     pm.expect(response).to.deep.include(mockData[counter]);\r",
 							"});\r",
+							"\r",
 							"\r",
 							"// Increment the counter and save to environment\r",
 							"counter++;\r",
@@ -627,7 +627,7 @@
 	],
 	"variable": [
 		{
-			"id": "6df99d8b-0858-4c1c-8ecf-1a177895c824",
+			"id": "1ea406ac-55a3-4cdc-a262-935d516651be",
 			"value": "",
 			"type": "string"
 		}
