@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1168dc55-d1e1-4cd6-83c4-0c0e7be0ee54",
+		"_postman_id": "c68d56c5-f4e0-4694-89c4-87add216b7d7",
 		"name": "Writers",
 		"description": "Different test for writers in bookstore",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -8,6 +8,28 @@
 	"item": [
 		{
 			"name": "GET-writers",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "bc7d99f0-aa1a-4376-a41e-bc60362ef86e",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3bca5094-720e-40e7-9a86-fec674e03650",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -45,7 +67,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "25d0a415-bc81-42ec-9d58-08a7bc688960",
+						"id": "fd050733-b791-4a2d-ad3f-9f9006f69283",
 						"exec": [
 							"if(!pm.environment.has(\"fakeData\")){\r",
 							"    let fakeData=[\r",
@@ -88,7 +110,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "b2631f1b-4796-4175-ae60-d4c3bfe4f2ba",
+						"id": "422e20d0-8639-46b2-8599-15a6a98d2073",
 						"exec": [
 							"let response = pm.response.json();\r",
 							"let counter = pm.environment.get(\"counter\") / 1;\r",
@@ -108,12 +130,11 @@
 							"counter++;\r",
 							"pm.environment.set('counter', counter);\r",
 							"\r",
-							"if(counter===3){\r",
-							"    counter=0;\r",
-							"}\r",
-							"\r",
 							"if(fakeData[counter]){\r",
 							"    postman.setNextRequest('POST-writers')\r",
+							"}\r",
+							"else {\r",
+							"  pm.environment.set(\"counter\", 0);\r",
 							"}"
 						],
 						"type": "text/javascript"
@@ -147,13 +168,242 @@
 				"description": "Posting some writers"
 			},
 			"response": []
+		},
+		{
+			"name": "PUT-writers",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "6fabbb00-8b9f-42ac-990a-958673b8a4b1",
+						"exec": [
+							"let counter = pm.environment.get(\"counter\") / 1;\r",
+							"let fakeData = JSON.parse(pm.environment.get(\"fakeData\"));\r",
+							"let id = fakeData[counter].id;\r",
+							"\r",
+							"fakeData.map(x=>x.name='Albert Einstein');\r",
+							"\r",
+							"let {name,description} = fakeData[counter]\r",
+							"\r",
+							"pm.environment.set('id',id);\r",
+							"pm.environment.set('name',name);    \r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "aa891dbb-e39a-4229-852d-328f8c3c945b",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let counter = pm.environment.get(\"counter\") / 1;\r",
+							"let fakeData = JSON.parse(pm.environment.get(\"fakeData\"));\r",
+							"let id=pm.environment.get(\"id\");\r",
+							"\r",
+							"console.log(fakeData.name);\r",
+							"pm.test(\"Response is correct\", function () {\r",
+							"    pm.expect(response).to.be.an(\"object\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"counter++;\r",
+							"pm.environment.set('counter', counter);\r",
+							"\r",
+							"\r",
+							"if(fakeData[counter]){\r",
+							"    postman.setNextRequest('PUT-writers');\r",
+							"}\r",
+							"\r",
+							"else {\r",
+							"  pm.environment.set(\"counter\", 0); } "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\":\"{{name}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/writers/{{id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"writers",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET-new writers",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "92bf8634-84a7-4cc4-b9c3-fe0ed54725a0",
+						"exec": [
+							"let counter = pm.environment.get(\"counter\") / 1;\r",
+							"let fakeData = JSON.parse(pm.environment.get(\"fakeData\"));\r",
+							"let {id} = fakeData[counter];\r",
+							"\r",
+							"pm.environment.set('id', id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "156eb4ac-ffa7-4349-a1e7-743e303ddf4e",
+						"exec": [
+							"\r",
+							"let response = pm.response.json();\r",
+							"let counter = pm.environment.get(\"counter\") / 1;\r",
+							"let fakeData = JSON.parse(pm.environment.get(\"fakeData\"));\r",
+							"let id=response.id;\r",
+							"\r",
+							"\r",
+							"console.log(response.id);\r",
+							"counter++;\r",
+							"pm.environment.set('counter', counter);\r",
+							"\r",
+							"if(fakeData[counter]){\r",
+							"    postman.setNextRequest('GET-new writers');\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/writers/{{id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"writers",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE-writers",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "6f002944-d61d-49b1-a8cf-1ed9c63a9393",
+						"exec": [
+							"let counter = pm.environment.get(\"counter\") / 1;\r",
+							"let fakeData = JSON.parse(pm.environment.get(\"fakeData\"));\r",
+							"let {id} = fakeData[counter]\r",
+							"\r",
+							"pm.environment.set(\"id\",id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "84f8b40e-864b-48a7-bcff-3d13bd39f7fa",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"\r",
+							"let counter = pm.environment.get(\"counter\") / 1;\r",
+							"let fakeData = JSON.parse(pm.environment.get(\"fakeData\"));\r",
+							"let id=pm.environment.get(\"id\");\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response is correct\", function () {\r",
+							"    pm.expect(response).to.exist;\r",
+							"});\r",
+							"\r",
+							"counter++;\r",
+							"pm.environment.set('counter', counter);\r",
+							"\r",
+							"\r",
+							"if(fakeData[counter]){\r",
+							"    postman.setNextRequest('DELETE-writers');\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/writers/{{id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"writers",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "eb816281-22a8-47e6-8dd7-73406da70bd7",
+				"id": "a599c8f2-a25b-4f23-ac9c-7b16c3d844fe",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -163,7 +413,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "a86072cc-fca2-4020-b293-dd6b1f2bdf81",
+				"id": "99b9ffd1-f89e-4775-b947-45f8e96960c7",
 				"type": "text/javascript",
 				"exec": [
 					""
