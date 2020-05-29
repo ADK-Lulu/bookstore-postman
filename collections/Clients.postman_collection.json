@@ -81,9 +81,8 @@
 							"let counter = pm.environment.get(\"counter\") / 1;\r",
 							"let mockClients = JSON.parse(pm.environment.get(\"mockClients\"));\r",
 							"\r",
-							"mockClients[counter].id = response.insertId;\r",
+							"mockClients[counter].id = response.lastID;\r",
 							"pm.environment.set('mockClients', JSON.stringify(mockClients)); \r",
-							"\r",
 							"\r",
 							"pm.test(\"Check for value in response\", function () {\r",
 							"    pm.expect(response.lastID).to.be.a('number');\r",
@@ -145,7 +144,7 @@
 						"id": "eaf0467f-0de9-4c0f-8f7c-2608e00475f4",
 						"exec": [
 							"let response = pm.response.json();\r",
-							"console.log(\"i lastClient\", response)\r",
+							"\r",
 							"let lastClient= response.pop();\r",
 							"\r",
 							"let lastClientId=lastClient.id;\r",
@@ -353,7 +352,7 @@
 			"response": []
 		},
 		{
-			"name": "DELETE-clients",
+			"name": "DELETE-lastClient",
 			"event": [
 				{
 					"listen": "test",
@@ -373,7 +372,9 @@
 							"\r",
 							"pm.test('Correct lastID', function(){\r",
 							"    pm.expect(response.lastID).to.equal(lastClientID);\r",
-							"})"
+							"})\r",
+							"\r",
+							"postman.setNextRequest('DELETE-all mockClients');"
 						],
 						"type": "text/javascript"
 					}
@@ -423,6 +424,103 @@
 						"api",
 						"clients",
 						"{{lastClientId}}"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Tests with DELETE clients"
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE-all mockClients",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "12dd9903-4d06-4c15-b964-850b4d095adb",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"\r",
+							"let counter = pm.environment.get(\"counter\") / 1;\r",
+							"let mockClients = JSON.parse(pm.environment.get(\"mockClients\"));\r",
+							"let lastClientId=pm.environment.get(\"lastClientId\")\r",
+							"\r",
+							"pm.test('Expected response', function(){\r",
+							"   pm.expect(response.lastID).to.equal(lastClientId)\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Correct status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Increment the counter and save to environment\r",
+							"counter++;\r",
+							"pm.environment.set('counter', counter);\r",
+							"\r",
+							"// Run request again if more mockdata\r",
+							"if(mockClients[counter]){\r",
+							"    postman.setNextRequest('DELETE-all mockClients');\r",
+							"}\r",
+							"else {\r",
+							"  pm.environment.set(\"counter\", 0);\r",
+							"  }"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9f7e6ad8-c7b9-4188-85d7-7fca76febb18",
+						"exec": [
+							"// Reading/parsing environment variables back to local variables\r",
+							"let counter = pm.environment.get(\"counter\") / 1;\r",
+							"let mockClients = JSON.parse(pm.environment.get(\"mockClients\"));\r",
+							"\r",
+							"let {id}=mockClients[counter]\r",
+							"pm.environment.set(\"id\",id)\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/clients/{{id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"clients",
+						"{{id}}"
 					],
 					"query": [
 						{
