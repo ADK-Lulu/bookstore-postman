@@ -1,0 +1,448 @@
+{
+	"info": {
+		"_postman_id": "4d2bcd77-e745-4750-9d34-c7051d018ea7",
+		"name": "Orders",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET-orders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8423f030-9371-4196-bcb3-346b512964ec",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders"
+					]
+				},
+				"description": "Tests for GET orders"
+			},
+			"response": []
+		},
+		{
+			"name": "POST-orders",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a7c76e2e-4af2-4af3-b8e9-0629fc22b57a",
+						"exec": [
+							"if(!pm.environment.has(\"orderFakeData\")){\r",
+							"    let orderFakeData=[\r",
+							"        {\r",
+							"        \"date\": \"2020-05-24 13:22:10\", \r",
+							"        \"client_email\":\"jsandeford2@ihg.com\"\r",
+							"        }\r",
+							"    ]; \r",
+							"    pm.environment.set(\"orderCounter\", 0);\r",
+							"    pm.environment.set(\"orderFakeData\", JSON.stringify(orderFakeData));\r",
+							"\r",
+							"}\r",
+							"\r",
+							"let orderCounter = pm.environment.get(\"orderCounter\") / 1;\r",
+							"let orderFakeData = JSON.parse(pm.environment.get(\"orderFakeData\"));\r",
+							"let {date, client_email} = orderFakeData[orderCounter]\r",
+							"\r",
+							"pm.environment.set('date', date);\r",
+							"pm.environment.set('client_email', client_email);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "15e5a2d8-bd14-4ae0-9041-8504fe09abd5",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let orderCounter = pm.environment.get(\"orderCounter\") / 1;\r",
+							"let orderFakeData = JSON.parse(pm.environment.get(\"orderFakeData\"));\r",
+							"\r",
+							"orderFakeData[orderCounter].id = response.insertId;\r",
+							"pm.environment.set('orderFakeData', JSON.stringify(orderFakeData));\r",
+							"\r",
+							"pm.test(\"Something in the response\", function () {\r",
+							"    pm.expect(response).to.not.equal(null);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Correct status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"orderCounter++;\r",
+							"pm.environment.set('orderCounter', orderCounter);\r",
+							"\r",
+							"if(orderFakeData[orderCounter]){\r",
+							"    postman.setNextRequest('POST-orders')\r",
+							"}else {\r",
+							"  pm.environment.set(\"orderCounter\", 0);\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"date\":\"{{date}}\",\n\t\"client_email\":\"{{client_email}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders"
+					]
+				},
+				"description": "Tests for POST orders"
+			},
+			"response": []
+		},
+		{
+			"name": "GET-lastOrder",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "5139ef10-6806-4586-87d9-85f578d4069d",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1ab78074-2317-4b63-8131-60ea98b57f3a",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastOrder= response.pop();\r",
+							"\r",
+							"let lastOrderId=lastOrder.id;\r",
+							"pm.environment.set('lastOrderId', lastOrderId);\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('ID exists', function(){\r",
+							"    pm.expect(lastOrderId).to.exist; \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT-orders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f4213cfb-6576-40b2-b61b-a1c5436c248f",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let orderCounter = pm.environment.get(\"orderCounter\") / 1;\r",
+							"let orderFakeData = JSON.parse(pm.environment.get(\"orderFakeData\"));\r",
+							"\r",
+							"orderFakeData[orderCounter].id = response.insertId;\r",
+							"pm.environment.set('orderFakeData', JSON.stringify(orderFakeData));\r",
+							"\r",
+							"pm.test(\"Something in the response\", function () {\r",
+							"    pm.expect(response).to.not.equal(null);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Correct status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"orderCounter++;\r",
+							"pm.environment.set('orderCounter', orderCounter);\r",
+							"\r",
+							"if(orderFakeData[orderCounter]){\r",
+							"    postman.setNextRequest('PUT-orders')\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1a11c812-46ee-4729-9264-11f96cc1920a",
+						"exec": [
+							"pm.environment.set(\"lastOrderId\", pm.environment.get(\"lastOrderId\"));\r",
+							"let orderCounter = pm.environment.get(\"orderCounter\") / 1;\r",
+							"let orderFakeData = JSON.parse(pm.environment.get(\"orderFakeData\"));\r",
+							"orderFakeData.map(x=>x.client_email=\"jsandeford2@ihg.com\");\r",
+							"let {date, client_email} = orderFakeData[orderCounter]\r",
+							"\r",
+							"pm.environment.set('date', date);\r",
+							"pm.environment.set('client_email', client_email);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"client_email\":\"{{client_email}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/orders/{{lastOrderId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"{{lastOrderId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET-order after PUT",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "64f4039f-6d90-4e49-bf50-6b0f3d0e6ff4",
+						"exec": [
+							"pm.environment.set(\"lastOrderId\", pm.environment.get(\"lastOrderId\"));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "4909e291-0955-4f45-9724-8fd7d38cc5d3",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastOrder= response.pop();\r",
+							"\r",
+							"let lastOrderId=lastOrder.id;\r",
+							"pm.environment.set('lastOrderId', lastOrderId);\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('ID exists', function(){\r",
+							"    pm.expect(lastOrderId).to.exist; \r",
+							"});\r",
+							"\r",
+							"console.log(lastOrder.client_email);\r",
+							"pm.test('Correct email', function(){\r",
+							"    pm.expect(lastOrder.client_email).to.include(['jsandeford2@ihg.com']);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orders/{{lastOrderId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"{{lastOrderId}}"
+					]
+				},
+				"description": "Checking that information after PUT is correct"
+			},
+			"response": []
+		},
+		{
+			"name": "GET-lastOrderId",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "7733752c-389f-4233-97ef-0c51c1695451",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "327d67fc-44e1-440d-a860-083d7d455e6a",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let deleteLastOrder= response.pop();\r",
+							"\r",
+							"let deleteLastOrderId = deleteLastOrder.id;\r",
+							"pm.environment.set('deleteLastOrderId', deleteLastOrderId);\r",
+							"\r",
+							"pm.test('Correct status', function (){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('ID exists', function(){\r",
+							"    pm.expect(deleteLastOrderId).to.exist; \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orders",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE-orders",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "17976550-b093-4e89-82d3-f8a6ad8b0357",
+						"exec": [
+							"if(!pm.environment.has(\"deleteLastOrderId\")){\r",
+							"    postman.setNextRequest(\"GET-lastOrderId\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"deleteLastOrderId\", pm.environment.get(\"deleteLastOrderId\"));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "ce9e64c6-e5cf-4138-bea3-50425d362436",
+						"exec": [
+							"let orderResponse = pm.response.json();\r",
+							"let deleteLastOrderID = pm.environment.get(\"deleteLastOrderId\");\r",
+							"\r",
+							"pm.test('correct change', function (){\r",
+							"    pm.expect(orderResponse.changes).to.equal(1);\r",
+							"});\r",
+							"\r",
+							"pm.test('Correct status', function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//Testet går inte att köra i en collection, går om man bara kör order-relaterade requests\r",
+							"//Postman sparar fel lastID om man kör en collection\r",
+							"pm.test('Correct lastID', function(){\r",
+							"    pm.expect(orderResponse.lastID).to.equal(deleteLastOrderID);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/orders/{{deleteLastOrderId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"orders",
+						"{{deleteLastOrderId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
