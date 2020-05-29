@@ -182,6 +182,177 @@
 			"response": []
 		},
 		{
+			"name": "PUT-clients",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "de041b06-d57d-4be2-9a44-7b446246a2fc",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"\r",
+							"let lastClientID = pm.environment.get(\"lastClientId\");\r",
+							"\r",
+							"pm.test('correct change-value', function (){\r",
+							"    pm.expect(response.changes).to.equal(1);\r",
+							"});\r",
+							"\r",
+							"pm.test('changing the last one', function (){\r",
+							"    pm.expect(response.lastID).to.equal(lastClientID);\r",
+							"});\r",
+							"\r",
+							"pm.test('Correct status', function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "1c0a12e9-67e9-45db-b39b-1ad266008459",
+						"exec": [
+							"if(!pm.environment.has(\"lastClientId\")){\r",
+							"    postman.setNextRequest(\"GET-lastClient\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"lastClientId\", pm.environment.get(\"lastClientId\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "",
+						"type": "text",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"marit@master.se\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/clients/{{lastClientId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"clients",
+						"{{lastClientId}}"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Tests with DELETE clients"
+			},
+			"response": []
+		},
+		{
+			"name": "GET-clients after PUT",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7e2681f7-db8f-47c1-9517-18016a656374",
+						"exec": [
+							"let response = pm.response.json();\r",
+							"let lastClientID = pm.environment.get(\"lastClientId\");\r",
+							"\r",
+							"pm.test('Did we change the last objects email?', function (){\r",
+							"    pm.expect(response[0]).to.have.property('email', \"marit@master.se\");\r",
+							"});\r",
+							"\r",
+							"pm.test('Correct status', function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c4ef1c2d-f32c-4e4c-855f-90a6a412a17e",
+						"exec": [
+							"if(!pm.environment.has(\"lastClientId\")){\r",
+							"    postman.setNextRequest(\"GET-lastClient\");\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"lastClientId\", pm.environment.get(\"lastClientId\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"type": "text",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/clients/{{lastClientId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"clients",
+						"{{lastClientId}}"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Tests with DELETE clients"
+			},
+			"response": []
+		},
+		{
 			"name": "DELETE-clients",
 			"event": [
 				{
